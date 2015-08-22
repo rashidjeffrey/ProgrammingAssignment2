@@ -4,7 +4,9 @@
 #       Matrix inversion is usually a costly computation and there may be some
 #       benefit to caching the inverse of a matrix rather than computing it repeatedly.
 #
-# HOW   To execute this xxxxxxxxxx TO BE DONE
+# HOW   To test these functions enter the following blurb in the console and observe the results:
+#       source('~/R/coursera/ProgrammingAssignment2/cachematrix.R')
+#       testCache()
 #
 # REFERENCES
 # Assignment  https://class.coursera.org/rprog-031/human_grading/view/courses/975105/assessments/3/submissions
@@ -13,7 +15,7 @@
 # WHEN      WHO     WHAT
 # 20150820  Rashid  First draft. Defines the template as obtained from the assignment (see linked ref)
 #                   Added annotations and made rudimentary changes to code, such as defining a matrix.
-# 2015082x  Rashid  Finish coding. Write a test script. Upload... TO BE DONE
+# 20150822  Rashid  Finish coding. Write a test function. 
 #
 ####################################################################################################
 
@@ -21,7 +23,7 @@
 ####################################################################################################
 # WHAT    This function creates a special "matrix" object that can cache its inverse.
 #
-# PARAM   x (defaults to an empty matrix if argument value not specified)
+# PARAM   Matrix x defaults to an empty matrix if argument value not specified
 #
 # RETURN  A list of functions which expose the public operations on the matrix.
 #         The functions define getter (accessor) and setter (mutator) operations.
@@ -68,9 +70,9 @@ makeCacheMatrix <- function(x = matrix()) {
 #       If the inverse has already been calculated (and the matrix has not changed), 
 #       then `cacheSolve` should retrieve the inverse from the cache.
 #
-# PARAM x
+# PARAM Matrix x returned by function makeCacheMatrix
 #
-# RETURN  TO BE DONE
+# RETURN  Return a matrix that is the inverse of x
 #
 cacheSolve <- function(x, ...) {
   
@@ -78,32 +80,61 @@ cacheSolve <- function(x, ...) {
         # Computing the inverse of a square matrix can be done with the `solve` function in R. 
         # For example, if `X` is a square invertible matrix, then `solve(X)` returns its inverse.
         
-        ### THIS IS THE TEMPLATE CODE OBTAINED FROM THE ASSIGNMENT README FILE ###
-        ### MODIFY THIS ####
-        m <- x$getmean()
-        if(!is.null(m)) {
-          message("getting cached data")
-          return(m)
-        }
-        data <- x$get()
-        m <- mean(data, ...)
-        x$setmean(m)
-        m        
-        
-        
-        # Pseudo code follows
-
-        
         # Get the inversed matrix
         inversedMatrix <- x$getInversedMatrix()
         
-        # Test the inversed matrix to see if it is an undefined object
-        # If defined then return the inversed matrix
-        # else get the matrix, inverse it, then set it
-        # return the inverse
-        
-        # have a nice cup of tea
-        
+        # Is the inverse of the matrix cached?
+        # i.e. is it a defined (non null) object?
+        if (!is.null(inversedMatrix)) {
+                message("Function cacheSolve. Returning cached inversed data...")
+        }
+        else {
+                message("Function cacheSolve. Creating and caching inversed data...")
+          
+                # Get the matrix data
+                data <- x$getMatrix()
+                
+                # Inverse the matrix 
+                inversedMatrix <- solve(data, ...)
+                
+                # Cache the inversed matrix
+                x$setInversedMatrix(inversedMatrix)       
+        }
+
+        return (inversedMatrix)
 }
 ####################################################################################################
+
+####################################################################################################
+# WHAT  Test the speed of functions defined above
+#       Cached data vs Non Cached data
+
+testCache <- function() {
+  #source('~/R/coursea/ProgrammingAssignment2/cachematrix.R')
+  
+  # Create a matrix of random numbers and cache it
+  testMatrix <- matrix(rnorm(10000), nrow = 100, ncol = 100)
+  cachedMatrix <- makeCacheMatrix(testMatrix)
+  
+  # Get the inverse of the matrix
+  # Print how long it takes to do it the first time
+  # when it is NOT yet cached
+  timeBegin <- Sys.time()
+  cacheSolve(cachedMatrix)
+  timeEnd <- Sys.time()
+  timeDuration <- timeEnd - timeBegin
+  print(timeDuration)
+  
+  # Get the inverse of the matrix again
+  # This time it should be quicker because the cached inverse matrix
+  # should be returned
+  timeBegin <- Sys.time()
+  cacheSolve(cachedMatrix)
+  timeEnd <- Sys.time()
+  timeDuration <- timeEnd - timeBegin
+  print(timeDuration)
+  
+}
+###############################################################################################
+
 
